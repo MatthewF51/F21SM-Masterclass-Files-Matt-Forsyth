@@ -1,44 +1,46 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-# Load the dataset
 data = pd.read_csv("rmw_simulated_dataset.csv")
 
-# Preview data
 print(data.head())
 
-# --- Plot 1: Latency by Middleware ---
+# Boxplot: latency by middleware
 plt.figure()
-sns.boxplot(data=data, x="middleware", y="latency_ms")
+data.boxplot(column="latency_ms", by="middleware")
 plt.title("Latency Distribution by Middleware")
-plt.ylabel("Latency (ms)")
+plt.suptitle("")
 plt.xlabel("Middleware")
+plt.ylabel("Latency (ms)")
 plt.show()
 
+# Average latency vs message size
+avg_latency = data.groupby(["message_size_kb", "middleware"])["latency_ms"].mean().unstack()
 
-# --- Plot 2: Latency vs Message Size ---
 plt.figure()
-sns.lineplot(data=data, x="message_size_kb", y="latency_ms", hue="middleware")
-plt.title("Latency vs Message Size")
-plt.ylabel("Latency (ms)")
+for middleware in avg_latency.columns:
+    plt.plot(avg_latency.index, avg_latency[middleware], marker="o", label=middleware)
+
+plt.title("Average Latency vs Message Size")
 plt.xlabel("Message Size (KB)")
+plt.ylabel("Average Latency (ms)")
+plt.legend()
 plt.show()
 
-
-# --- Plot 3: Jitter Comparison ---
+# Boxplot: jitter by middleware
 plt.figure()
-sns.boxplot(data=data, x="middleware", y="jitter_ms")
+data.boxplot(column="jitter_ms", by="middleware")
 plt.title("Jitter Comparison")
-plt.ylabel("Jitter (ms)")
+plt.suptitle("")
 plt.xlabel("Middleware")
+plt.ylabel("Jitter (ms)")
 plt.show()
 
-
-# --- Plot 4: CPU Usage ---
+# Boxplot: CPU usage by middleware
 plt.figure()
-sns.boxplot(data=data, x="middleware", y="cpu_usage_percent")
+data.boxplot(column="cpu_usage_percent", by="middleware")
 plt.title("CPU Usage by Middleware")
-plt.ylabel("CPU Usage (%)")
+plt.suptitle("")
 plt.xlabel("Middleware")
+plt.ylabel("CPU Usage (%)")
 plt.show()
