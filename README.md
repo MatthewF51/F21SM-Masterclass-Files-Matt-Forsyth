@@ -28,7 +28,6 @@ The goals of this lab are to:
 This lab includes the following files:
 
 - `csvGenerator.py`, generates the simulated dataset
-- `rmw_simulated_dataset.csv`, the generated dataset
 - `exampleAnalysisFile_Task1.py`, starter analysis script for Task 1
 - `requirements.txt`, Python dependencies for the lab
 
