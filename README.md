@@ -1,113 +1,149 @@
-# F21SM-Masterclass-Files-Matt-Forsyth
+# F21SM Masterclass Lab Files, Matt Forsyth
 
 ## Overview
 
-In this lab task, you will analyse performance data for different ROS2 middleware implementations.
+In this lab, you will analyse simulated performance data for different ROS 2 middleware implementations.
 
 The middleware systems included in this dataset are:
 
-- **Fast DDS**
-- **Cyclone DDS**
-- **Zenoh**
-(Others are available)
+- Fast DDS
+- Cyclone DDS
+- Zenoh
 
-All three can be used through the **ROS 2 Middleware Interface (RMW)**, but they have different architectural design goals and performance characteristics.
+All three can be used through the ROS 2 Middleware Interface, but they have different architectural goals and performance characteristics.
 
-The goal of this exercise is to:
+The dataset is simulated, not taken from a real benchmark. It is designed to help you identify meaningful middleware trade-offs across different network conditions.
 
-- Explore how middleware behaviour changes under different conditions
-- Interpret communication performance metrics
-- Use this information to make architectural decisions about middleware selection
+The goals of this lab are to:
+
+- explore how middleware behaviour changes under different conditions
+- interpret communication performance metrics
+- use evidence from the data to make middleware selection decisions
+- apply QoS reasoning to common ROS 2 communication scenarios
 
 ---
 
-# Dataset
-You can generate your own dataset with:
+## Files Included
+
+This lab includes the following files:
+
+- `csvGenerator.py`, generates the simulated dataset
+- `rmw_simulated_dataset.csv`, the generated dataset
+- `exampleAnalysisFile_Task1.py`, starter analysis script for Task 1
+- `requirements.txt`, Python dependencies for the lab
+
+---
+
+## Setup
+
+Install the required dependencies with:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Dataset
+
+You can generate a fresh dataset with:
+
+```bash
 python csvGenerator.py
+```
 
 The dataset file is:
-rmw_simulated_dataset.csv
 
-It contains simulated performance measurements for multiple middleware implementations under different network conditions.
+```bash
+rmw_simulated_dataset.csv
+```
+
+It contains simulated communication measurements for multiple middleware implementations under different network conditions.
 
 Each row represents one simulated communication measurement.
 
-# Running the Analysis Script
+The dataset includes:
 
-A starter analysis script is provided:
-exampleAnalysisFile_Task1.py
-
-
-This script loads the dataset and generates several plots to help visualise the performance characteristics.
-
-### Required Python Libraries
-
-The script requires:
-pandas
-matplotlib
-
-Which can be installed with:
-pip install pandas matplotlib
-
-
-### Running the Script
-Run with:
-python exampleAnalysisFile_Task1.py
-
-
-After running, several plots will be generated inside a folder called:
-/plots
+- middleware
+- network condition
+- message size
+- latency
+- jitter
+- packet loss
+- throughput
+- CPU usage
 
 ---
 
-# Generated Plots
+## Running the Analysis Script
 
-The script produces several visualisations.
+A starter analysis script is provided:
 
-### 1. Latency (LAN vs WAN)
+```bash
+exampleAnalysisFile_Task1.py
+```
+
+This script loads the dataset and generates several plots to help visualise the performance characteristics of each middleware.
+
+Run the script with:
+
+```bash
+python exampleAnalysisFile_Task1.py
+```
+
+After running, several plots will be generated inside a folder called:
+
+```bash
+plots
+```
+
+---
+
+## Generated Plots
+
+The analysis script produces several visualisations to support your answers.
+
+### 1. Latency, LAN vs WAN
 
 Shows how communication latency changes between local networks and wide-area networks.
 
-This illustrates how different middleware responds to changes in network topology.
+### 2. Jitter, LAN vs WAN
 
----
-
-### 2. Jitter (LAN vs WAN)
-
-Shows variability in communication timing.
-
-Low jitter is important for real-time robotic control systems.
-
----
+Shows variability in communication timing. Low jitter is especially important in systems that need predictable timing.
 
 ### 3. CPU Usage by Middleware
 
-Shows estimated processing overhead of different middleware implementations.
+Shows estimated processing overhead for each middleware implementation. This can matter for embedded or resource-constrained systems.
 
-This can influence middleware choice for embedded or resource-constrained systems.
+### 4. Average Latency vs Message Size
+
+Shows how communication latency scales as payload size increases.
+
+### 5. Packet Loss by Network Condition
+
+Shows how different middleware behave when packet loss becomes more likely, especially under WAN conditions.
+
+### 6. WAN Latency vs Message Size
+
+Focuses specifically on how WAN communication behaves as message size grows.
+
+### 7. Latency Increase from LAN to WAN
+
+Shows how much each middleware degrades when moving from a local network to a wider and more complex network environment.
 
 ---
 
-### 4. Latency vs Message Size
-
-Shows how communication latency scales with increasing message payload size.
-
----
-
-### 5. Packet Loss Comparison
-
-Shows how different network environments influence packet loss behaviour.
-
----
-
-# Lab Tasks
+## Task 1, Analyse the Data
 
 Using the plots and dataset, answer the following questions.
+
+Prepare 3 to 5 short, evidence-based observations from the plots and summary values.
 
 ### Latency
 
 - Which middleware shows the lowest latency on LAN?
 - How does latency change when moving from LAN to WAN?
+- How does message size affect latency?
 
 ### Jitter
 
@@ -123,14 +159,17 @@ Using the plots and dataset, answer the following questions.
 
 - How does WAN networking affect communication performance?
 - Which middleware appears most resilient to network degradation?
+- What trade-offs do you notice between LAN performance and WAN resilience?
 
 ---
 
-# Scenario-Based Questions
+## Task 2, Scenario-Based Middleware Selection
 
 Based on your analysis, choose a middleware implementation for each scenario and explain your reasoning.
 
-### Scenario 1 – Industrial Robot
+Use evidence from Task 1 to justify each choice. Explain the trade-offs, not just the benefits.
+
+### Scenario 1, Industrial Robot
 
 A robotic arm operating on a factory floor:
 
@@ -138,9 +177,7 @@ A robotic arm operating on a factory floor:
 - stable local network
 - strict timing requirements
 
----
-
-### Scenario 2 – Research Mobile Robot
+### Scenario 2, Research Mobile Robot
 
 A mobile robot operating in a robotics lab:
 
@@ -148,14 +185,52 @@ A mobile robot operating in a robotics lab:
 - moderate compute resources
 - strong ROS ecosystem integration required
 
----
-
-### Scenario 3 – Distributed Robot Fleet
+### Scenario 3, Distributed Robot Fleet
 
 A fleet of warehouse robots connected to a cloud monitoring system:
 
 - robots deployed across multiple subnets
 - routers and firewalls present
 - distributed monitoring and coordination required
+
+---
+
+## Task 3, QoS Selection
+
+For each message type below, choose suitable QoS settings and briefly justify your choices.
+
+Focus on these QoS policies:
+
+- reliability
+- durability
+- history
+- depth
+
+Message types:
+
+- camera stream
+- velocity commands
+- battery or diagnostics telemetry
+- task or goal completion status
+
+When answering, think about what matters most for each message type:
+
+- fresh data
+- guaranteed delivery
+- bounded buffering
+- whether late-joining subscribers need earlier messages
+
+This task connects the middleware discussion to ROS 2 communication policy. Different message types have different priorities, so the same QoS settings will not always be appropriate.
+
+---
+
+## Expected Outcome
+
+By the end of this lab, you should be able to:
+
+- interpret middleware performance data
+- explain how network conditions affect ROS 2 communication
+- choose a suitable middleware for different deployment scenarios
+- justify QoS choices for different ROS 2 message types
 
 ---
